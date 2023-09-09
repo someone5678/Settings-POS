@@ -78,6 +78,14 @@ public class BlockingPrefWithSliceController extends BasePreferenceController im
     String mExtraIntent = "";
     @VisibleForTesting
     String mExtraPendingIntent = "";
+    @VisibleForTesting
+    String mCustomSliceIntentAction = "";
+    @VisibleForTesting
+    String mCustomSlicePendingIntentAction = "";
+    @VisibleForTesting
+    String mCustomExtraIntent = "";
+    @VisibleForTesting
+    String mCustomExtraPendingIntent = "";
 
     public BlockingPrefWithSliceController(Context context, String preferenceKey) {
         super(context, preferenceKey);
@@ -94,6 +102,13 @@ public class BlockingPrefWithSliceController extends BasePreferenceController im
         mExtraIntent = mContext.getResources().getString(R.string.config_bt_slice_extra_intent);
         mExtraPendingIntent = mContext.getResources().getString(
                 R.string.config_bt_slice_extra_pending_intent);
+        mCustomSliceIntentAction = mContext.getResources().getString(
+                R.string.config_custom_bt_slice_intent_action);
+        mCustomSlicePendingIntentAction = mContext.getResources().getString(
+                R.string.config_custom_bt_slice_pending_intent_action);
+        mCustomExtraIntent = mContext.getResources().getString(R.string.config_custom_bt_slice_extra_intent);
+        mCustomExtraPendingIntent = mContext.getResources().getString(
+                R.string.config_custom_bt_slice_extra_pending_intent);
     }
 
     @Override
@@ -138,7 +153,11 @@ public class BlockingPrefWithSliceController extends BasePreferenceController im
         if (TextUtils.isEmpty(mSliceIntentAction)
                 || TextUtils.isEmpty(mExtraIntent)
                 || TextUtils.isEmpty(mSlicePendingIntentAction)
-                || TextUtils.isEmpty(mExtraPendingIntent)) {
+                || TextUtils.isEmpty(mExtraPendingIntent)
+                || TextUtils.isEmpty(mCustomSliceIntentAction)
+                || TextUtils.isEmpty(mCustomExtraIntent)
+                || TextUtils.isEmpty(mCustomSlicePendingIntentAction)
+                || TextUtils.isEmpty(mCustomExtraPendingIntent)) {
             Log.d(TAG, "No configs");
             return;
         }
@@ -161,8 +180,15 @@ public class BlockingPrefWithSliceController extends BasePreferenceController im
                 Optional<CharSequence> subtitle = extractSubtitleFromSlice(sliceItem.getSlice());
                 Optional<SliceAction> action = extractActionFromSlice(sliceItem.getSlice());
                 // Create preference
+                String sliceArray[] = 
+                    { mSliceIntentAction, mExtraIntent, mSlicePendingIntentAction, mExtraPendingIntent };
                 Optional<Preference> preferenceItem = createPreferenceItem(title, subtitle, action,
-                        orderLevel);
+                        orderLevel, sliceArray);
+                sliceArray = new String[]
+                    { mCustomSliceIntentAction, mCustomExtraIntent, 
+                        mCustomSlicePendingIntentAction, mCustomExtraPendingIntent };
+                Optional<Preference> preferenceItem = createPreferenceItem(title, subtitle, action,
+                        orderLevel, sliceArray);
                 if (preferenceItem.isPresent()) {
                     orderLevel++;
                     preferenceItemsList.add(preferenceItem.get());
@@ -173,7 +199,7 @@ public class BlockingPrefWithSliceController extends BasePreferenceController im
     }
 
     private Optional<Preference> createPreferenceItem(Optional<CharSequence> title,
-            Optional<CharSequence> subtitle, Optional<SliceAction> sliceAction, int orderLevel) {
+            Optional<CharSequence> subtitle, Optional<SliceAction> sliceAction, int orderLevel, String[] sliceArray) {
         Log.d(TAG, "Title: " + title.orElse("no title")
                 + ", Subtitle: " + subtitle.orElse("no Subtitle")
                 + ", Action: " + sliceAction.orElse(null));
@@ -201,13 +227,13 @@ public class BlockingPrefWithSliceController extends BasePreferenceController im
             Intent intentFromSliceAction = sliceAction.get().getAction().getIntent();
             Intent expectedActivityIntent = null;
             Log.d(TAG, "SliceAction: intent's Action:" + intentFromSliceAction.getAction());
-            if (intentFromSliceAction.getAction().equals(mSliceIntentAction)) {
+            if (intentFromSliceAction.getAction().equals(sliceArray[0] /* mSliceIntentAction */)) {
                 expectedActivityIntent = intentFromSliceAction
-                        .getParcelableExtra(mExtraIntent, Intent.class);
+                        .getParcelableExtra(sliceArray[1] /* mExtraIntent */, Intent.class);
             } else if (intentFromSliceAction.getAction().equals(
-                    mSlicePendingIntentAction)) {
+                    sliceArray[2] /* mSlicePendingIntentAction */)) {
                 PendingIntent pendingIntent = intentFromSliceAction
-                        .getParcelableExtra(mExtraPendingIntent, PendingIntent.class);
+                        .getParcelableExtra(sliceArray[3] /* mExtraPendingIntent */, PendingIntent.class);
                 expectedActivityIntent =
                         pendingIntent != null ? pendingIntent.getIntent() : null;
             } else {

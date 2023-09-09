@@ -51,4 +51,13 @@
     <!-- Android debugging as root -->
     <string name="adb_enable_root">Rooted debugging</string>
     <string name="adb_enable_summary_root">Allow running Android debugging as root</string>
+
+    <!-- BT Slice intent action. To support Settings 2 panel, BT slice can't use PendingIntent.send(). Therefore, here defines the Slice intent action. -->
+    <string name="config_custom_bt_slice_intent_action" translatable="false"></string>
+    <!-- BT Slice pending intent action. To support Settings 2 panel, BT slice can't use PendingIntent.send(). Therefore, here defines the Slice pending intent action. -->
+    <string name="config_custom_bt_slice_pending_intent_action" translatable="false"></string>
+    <!-- BT Slice EXTRA_INTENT. To support Settings 2 panel, BT slice can't use PendingIntent.send(). Therefore, here defines the Slice EXTRA_INTENT. -->
+    <string name="config_custom_bt_slice_extra_intent" translatable="false"></string>
+    <!-- BT Slice EXTRA_PENDING_INTENT. To support Settings 2 panel, BT slice can't use PendingIntent.send(). Therefore, here defines the Slice EXTRA_PENDING_INTENT. -->
+    <string name="config_custom_bt_slice_extra_pending_intent" translatable="false"></string>
 </resources>
